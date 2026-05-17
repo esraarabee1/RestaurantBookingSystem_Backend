@@ -5,6 +5,10 @@ import mongoose from "mongoose";
 import {
   createBooking,
   getBookingsByRestaurant,
+  getAllBookings,
+  getBookingById,
+  updateBooking,
+  deleteBooking,
 } from "../services/booking.service.js";
 
 export const addBooking = asyncHandler(async (req, res, next) => {
@@ -42,5 +46,78 @@ export const getBookings = asyncHandler(async (req, res, next) => {
     success: true,
     results: bookings.length,
     data: bookings,
+  });
+});
+
+// Get All Bookings
+export const getAllBookingsController = asyncHandler(async (req, res) => {
+  const bookings = await getAllBookings();
+
+  res.status(200).json({
+    success: true,
+    results: bookings.length,
+    data: bookings,
+  });
+});
+// Get Single Booking
+export const getSingleBooking = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  // validate id
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return next(new AppError("Invalid booking ID", 400));
+  }
+
+  const booking = await getBookingById(id);
+
+  if (!booking) {
+    return next(new AppError("Booking not found", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    data: booking,
+  });
+});
+
+// Update Booking
+export const updateBookingController = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  // validate id
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return next(new AppError("Invalid booking ID", 400));
+  }
+
+  const booking = await updateBooking(id, req.body);
+
+  if (!booking) {
+    return next(new AppError("Booking not found", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    data: booking,
+  });
+});
+
+// Delete Booking
+export const deleteBookingController = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+
+  // validate id
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return next(new AppError("Invalid booking ID", 400));
+  }
+
+  const booking = await deleteBooking(id);
+
+  if (!booking) {
+    return next(new AppError("Booking not found", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Booking deleted successfully",
   });
 });
