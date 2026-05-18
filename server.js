@@ -1,4 +1,6 @@
 import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
 import errorHandler from "./middlewares/error.middleware.js";
 import dotenv from "dotenv";
 // import cors from "cors";
@@ -11,7 +13,9 @@ import bookingRoutes from "./routes/booking.routes.js";
 dotenv.config({ path: "config.env" });
 connectDB();
 const app = express();
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use(express.static(path.join(__dirname, "uploads")));
 if (process.env.NODE_ENV == "development") {
   app.use(morgan("dev"));
   console.log(`mode: ${process.env.NODE_ENV}`);
